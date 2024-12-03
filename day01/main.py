@@ -24,5 +24,6 @@ def main():
 
     print(f'Answer Part Two: {answer_part_two}')
 
+
 if __name__ == '__main__':
     main()
