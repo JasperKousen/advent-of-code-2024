@@ -8,19 +8,15 @@ def blink(stone, n):
     try:
         return blinks[(stone, n)]
     except KeyError:
-        stones = []
-
         if stone == 0:
-            stones.append(1)
+            blinks[(stone, n)] = blink(1, n - 1)
         elif len(stone_string := str(stone)) % 2 == 0:
             split = len(stone_string) // 2
             left_stone, right_stone = stone_string[:split], stone_string[split:]
-            stones.append(int(left_stone))
-            stones.append(int(right_stone))
+            blinks[(stone, n)] = blink(int(left_stone), n - 1) + blink(int(right_stone), n - 1)
         else:
-            stones.append(2024 * stone)
+            blinks[(stone, n)] = blink(2024 * stone, n - 1)
 
-        blinks[(stone, n)] = sum(blink(s, n - 1) for s in stones)
         return blinks[(stone, n)]
 
 
@@ -37,4 +33,8 @@ def main():
 
 
 if __name__ == '__main__':
+    import time
+    s = time.perf_counter()
     main()
+    e = time.perf_counter()
+    print(e - s)
