@@ -1,23 +1,19 @@
-blinks = dict()
+import functools
 
 
+@functools.cache
 def blink(stone, n):
     if n == 0:
         return 1
 
-    try:
-        return blinks[(stone, n)]
-    except KeyError:
-        if stone == 0:
-            blinks[(stone, n)] = blink(1, n - 1)
-        elif len(stone_string := str(stone)) % 2 == 0:
-            split = len(stone_string) // 2
-            left_stone, right_stone = stone_string[:split], stone_string[split:]
-            blinks[(stone, n)] = blink(int(left_stone), n - 1) + blink(int(right_stone), n - 1)
-        else:
-            blinks[(stone, n)] = blink(2024 * stone, n - 1)
-
-        return blinks[(stone, n)]
+    if stone == 0:
+        return blink(1, n - 1)
+    elif len(stone_string := str(stone)) % 2 == 0:
+        split = len(stone_string) // 2
+        left_stone, right_stone = stone_string[:split], stone_string[split:]
+        return blink(int(left_stone), n - 1) + blink(int(right_stone), n - 1)
+    else:
+        return blink(2024 * stone, n - 1)
 
 
 def main():
@@ -34,6 +30,7 @@ def main():
 
 if __name__ == '__main__':
     import time
+
     s = time.perf_counter()
     main()
     e = time.perf_counter()
