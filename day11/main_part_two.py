@@ -19,8 +19,7 @@ def blink(stone, n):
 def main():
     data = '7568 155731 0 972 1 6919238 80646 22'
     # data = '125 17'
-    data = data.split(' ')
-    data = [int(stone) for stone in data]
+    data = map(int, data.split(' '))
 
     n = 75
     result = sum(blink(stone, n) for stone in data)
