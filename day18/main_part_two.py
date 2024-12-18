@@ -123,7 +123,7 @@ def main():
     path = get_path(nodes)
     print(path)
 
-    for i, (x, y) in enumerate(data[1024:]):
+    for x, y in data[1024:]:
         memory[y][x] = '#'
 
         if (x, y) not in path:
