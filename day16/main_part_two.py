@@ -1,4 +1,4 @@
-from queue import Queue
+from pprint import pprint
 
 
 def neighbors(x, y, direction, width, height):
@@ -47,31 +47,27 @@ def solve(maze):
     start = ((1, height - 1 - 1), 0)
     nodes[start]['distance'] = 0
 
-    to_visit = Queue()
-    to_visit.put(start)
+    to_visit = [start]
 
-    while not to_visit.empty():
-        node, node_direction = to_visit.get()
+    while to_visit:
+        node, node_direction = to_visit.pop(0)
         for neighbor, neighbor_direction in neighbors(*node, node_direction, width=width, height=height):
             if maze[neighbor[1]][neighbor[0]] == '#':
                 continue
 
             distance_to_node_from_current = (
-                nodes[node, node_direction]['distance']
-                + (1 if node_direction == neighbor_direction else 1000)
+                    nodes[node, node_direction]['distance']
+                    + (1 if node_direction == neighbor_direction else 1000)
             )
 
-            # if nodes[(neighbor, neighbor_direction)]['distance'] > distance_to_node_from_current:
-            if distance_to_node_from_current < 88468 + 2000:
-                if nodes[(neighbor, neighbor_direction)]['distance'] > distance_to_node_from_current:
-                    to_visit.put((neighbor, neighbor_direction))
-                nodes[(neighbor, neighbor_direction)]['distance'] = min(distance_to_node_from_current,
-                                                                        nodes[(neighbor, neighbor_direction)]['distance'])
-                nodes[(neighbor, neighbor_direction)]['previous'].add((node, node_direction))
+            nodes[(neighbor, neighbor_direction)]['previous'].add((node, node_direction))
+            if nodes[(neighbor, neighbor_direction)]['distance'] > distance_to_node_from_current:
+                to_visit.append((neighbor, neighbor_direction))
+                nodes[(neighbor, neighbor_direction)]['distance'] = distance_to_node_from_current
     return nodes
 
 
-def get_path(nodes, width):
+def get_paths(nodes, width):
     paths = []
 
     possible_end_nodes = []
@@ -98,7 +94,14 @@ def get_path(nodes, width):
             node, direction = path[0]
 
             previous_nodes = nodes[(node, direction)]['previous']
-            distances = {node: nodes[node]['distance'] for node in previous_nodes}
+            distances = {
+                (prev_node, prev_direction): (
+                        nodes[(prev_node, prev_direction)]['distance']
+                        + (1 if direction == prev_direction else 1000)
+                )
+                for prev_node, prev_direction in previous_nodes
+            }
+
             previous_nodes = [node for node in previous_nodes if distances[node] == min(distances.values())]
             for node, direction in previous_nodes:
                 new_paths.append([(node, direction)] + path)
@@ -162,28 +165,46 @@ def main():
     with open('input.txt') as file:
         data = file.read()
 
-        data = """###############
-#.......#....E#
-#.#.###.#.###.#
-#.....#.#...#.#
-#.###.#####.#.#
-#.#.#.......#.#
-#.#.#####.###.#
-#...........#.#
-###.#.#####.#.#
-#...#.....#.#.#
-#.#.#.###.#.#.#
-#.....#...#.#.#
-#.###.#.#.#.#.#
-#S..#.....#...#
-###############"""
+#         data = """###############
+# #.......#....E#
+# #.#.###.#.###.#
+# #.....#.#...#.#
+# #.###.#####.#.#
+# #.#.#.......#.#
+# #.#.#####.###.#
+# #...........#.#
+# ###.#.#####.#.#
+# #...#.....#.#.#
+# #.#.#.###.#.#.#
+# #.....#...#.#.#
+# #.###.#.#.#.#.#
+# #S..#.....#...#
+# ###############"""
+
+#     data = """#################
+# #...#...#...#..E#
+# #.#.#.#.#.#.#.#.#
+# #.#.#.#...#...#.#
+# #.#.#.#.###.#.#.#
+# #...#.#.#.....#.#
+# #.#.#.#.#.#####.#
+# #.#...#.#.#.....#
+# #.#.#####.#.###.#
+# #.#.#.......#...#
+# #.#.###.#####.###
+# #.#.#...#.....#.#
+# #.#.#.#####.###.#
+# #.#.#.........#.#
+# #.#.#.#########.#
+# #S#.............#
+# #################"""
 
     maze = list(map(list, data.splitlines()))
 
     print_maze(maze)
 
     nodes = solve(maze)
-    paths, cost = get_path(nodes, width=len(maze[0]))
+    paths, cost = get_paths(nodes, width=len(maze[0]))
     print(paths)
     print(cost)
     # print_solved_maze(maze, path)
@@ -191,6 +212,7 @@ def main():
     tiles = {node for path in paths for node, direction in path}
     print(tiles)
     print_seen_tiles(maze, tiles)
+    print(len(tiles))
 
 
 if __name__ == '__main__':
