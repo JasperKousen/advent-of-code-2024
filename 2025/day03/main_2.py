@@ -26,12 +26,6 @@ def main():
                     max_batteries[k] = battery
                     reset_rest_of_battery(k)
                     break
-            # for k in reversed(range(1, 12)):
-            #     if (j != bank_length - k) and (battery > max_batteries[12 - k - 1]):
-            #         max_batteries[12 - k - 1] = battery
-            #         for m in range(12 - k, 12):
-            #             max_batteries[m] = 0
-            #         break
             else:
                 if battery > max_batteries[-1]:
                     max_batteries[-1] = battery
