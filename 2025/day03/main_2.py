@@ -1,5 +1,5 @@
 from collections import defaultdict
-from pprint import pprint
+import time
 
 def main():
     with open('input.txt') as f:
@@ -31,14 +31,13 @@ def main():
                     max_batteries[-1] = battery
                     batteries[i] = max_batteries
 
-    print([
-        sum(b * (10 ** (11 - x)) for x, b in enumerate(battery))
-        for battery in batteries.values()
-    ])
     print(sum(
         sum(b * 10 ** (11 - x)  for x, b in enumerate(battery))
         for battery in batteries.values()
     ))
 
 if __name__ == '__main__':
+    s = time.perf_counter()
     main()
+    print(time.perf_counter() - s)
+
