@@ -21,20 +21,23 @@ def main():
             ]
             for button in buttons
         ]
-
-        joltage = row[-1]
-        joltage = list(map(int, joltage[1:-1].split(',')))
+        # joltage = row[-1]
 
         machine = np.array(machine)  # [l x 1]
         buttons = np.array(buttons)  # [b x l]
-        joltage = np.array(joltage)  # [l x 1]
+
+        # print(machine)
+        # print(buttons)
+        # print(joltage)
 
         presses = cp.Variable(len(buttons), integer=True)
+        k = cp.Variable(len(machine), integer=True)
 
         objective = cp.Minimize(cp.sum(presses))
         constraints = [
             0 <= presses,
-            buttons.T @ presses == joltage
+            presses <= 1,
+            buttons.T @ presses == machine + 2 * k
         ]
         prob = cp.Problem(objective, constraints)
 
